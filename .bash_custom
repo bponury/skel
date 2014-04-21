@@ -1,0 +1,143 @@
+#!/bin/bash
+unset _c
+declare -A _c
+unset __c
+declare -A __c
+
+_c[reset]="\033[0;0m"
+_c[red]="\033[0;31m"
+_c[green]="\033[0;32m"
+_c[yellow]="\033[0;33m"
+_c[blue]="\033[0;34m"
+_c[pink]="\033[0;35m"
+_c[cyan]="\033[0;36m"
+_c[white]="\033[0;37m"
+
+#
+#	FUNCTIONS
+#
+
+function _c_boldify {
+	for k in ${!_c[@]}; do
+		[ "$k" == bold_* ] && continue
+		local c=${_c[$k]}
+		_c[bold_$k]="${c/0;/1;}"
+		__c[$k]="\[${_c[$k]}\]"
+		__c[bold_$k]="\[${_c[bold_$k]}\]"
+	done
+}
+_c_boldify;
+
+function _saferm()
+{
+	local OPTARG=""
+	local OPTIND=""
+	local opt=""
+	local cmd=""
+	local TEMP=""
+	local PATTERN=""
+
+	while getopts "crfiIop" opt "$@"; do
+		case $opt in
+		c)
+			local _C=true
+			;;
+		r)
+			local _r="-r"
+			;;
+		f)
+			local _f="-f"
+			;;
+		i)
+			local _i="-i"
+			;;
+		I)
+			local _I="-I"
+			;;
+		o)
+			local _o="--one-file-system"
+			;;
+		p)
+			echo -e "${_c[bold_red]}\t\t!!! PURGING !!!${_c[reset]}" >&2
+			local _p=true
+			;;
+		\?)
+			echo "invalid option -$OPTARG"
+			return
+			;;
+		esac
+	done
+
+	local args=()
+	local var=""
+
+	shift $((OPTIND - 1))
+
+	if [ "$#" -eq 0 ]; then
+		echo "_saferm [crfiIop] <files...>"
+		return;
+	fi
+
+	for var in "$@"; do
+		args[${#args[@]}]=\"$var\"
+	done
+
+	if [ ! -z "$_p" ]; then
+		cmd="/bin/rm ${_r} ${_f} ${_i} ${_I} ${_o}"
+	else
+		PATTERN=$(date +%Y-%m-%d_%H:%M:%S)
+		PATTERN="DELETED-${PATTERN}-XXX"
+		TEMP=$(mktemp -d /tmp/${PATTERN})
+		chmod 700 ${TEMP}
+
+		if [ -z ${TEMP} ]; then
+			echo "My God... it's full of stars!"
+			return
+		fi
+
+		cmd="/bin/mv ${_f} ${_i} -t ${TEMP}"
+	fi
+
+	if [ "$_p" ] && [ ! -z "$_C" ]; then
+		echo -e "${_c[white]}Execute: $cmd"
+		for arg in "${args[@]}"; do
+			echo -e "\t${_c[bold_white]}${arg}${_c[reset]}"
+		done
+		echo -ne "${_c[bold_red]}Remove? [Y/n]: ${_c[reset]}"
+		read c
+
+		([ "$c" != 'y' ] && [ "$c" != 'Y' ] && [ "$c" != '' ]) && return
+	fi
+
+	eval $cmd ${args[@]}
+}
+
+#
+# SETTINGS
+#
+
+PROMPT_COMMAND='RET=$?;'
+RET_VALUE='$(echo $RET)'
+RET_SMILEY='$(if [[ $RET = 0 ]]; then echo -en "\[\033[1;32m\]:)\[\033[0;0m\]"; else echo -en "\[\033[1;31m\]:(\[\033[0;0m\]"; fi)'
+
+FAIL_COLOR='$(if [[ $RET != 0 ]]; then echo -en "\[\033[1;31m\]"; fi)'
+
+COLOR_HOST=${__c[bold_cyan]}
+COLOR_LOW=${__c[bold_blue]}
+COLOR_PWD=${__c[cyan]}
+
+export PS1="${__c[white]}${FAIL_COLOR}\t${COLOR_LOW}|${COLOR_HOST}\h${COLOR_LOW}]: ${COLOR_PWD}\w $RET_SMILEY${__c[bold_red]} \\$ ${__c[reset]}"
+
+export EDITOR=vim
+
+alias ls='ls -F --color'
+
+alias grep='grep --color -E'
+alias Grep='grep --color -E'
+alias gerp='grep --color -E'
+alias sudo='sudo '
+alias rm='_saferm -co '
+
+source ~/.bash_local 2>/dev/null
+
+true
