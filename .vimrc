@@ -47,12 +47,12 @@ set smartcase
 set incsearch
 set hlsearch
 
-"hi StatusLine cterm=bold ctermbg=8 ctermfg=2
-"hi Comment cterm=none ctermfg=darkred
+" alternative comment color
+"hi Comment cterm=none ctermfg=88
 
 augroup vimrc_autocmds
 	autocmd BufEnter * highlight HighLight ctermbg=235
-	autocmd BufEnter * match HighLight /\%80v.*\|\s\+$\| \+\ze\t\|^ \+/
+	autocmd BufEnter * match HighLight /\%81v.\+\|\s\+$\| \+\ze\t\|^ \+/
 augroup END
 
 if filereadable(glob("~/.vim/local.vimrc"))
