@@ -29,14 +29,14 @@ set formatoptions+=r
 
 syntax on
 set backspace=2
-set autoindent
+"set autoindent
 set smarttab
 set smartindent
 
 " STYLE SETTINGS
-set tabstop=8
+set tabstop=4
 set softtabstop=8
-set shiftwidth=8
+set shiftwidth=4
 set noexpandtab
 
 set showmatch
@@ -49,6 +49,9 @@ set hlsearch
 
 " alternative comment color
 "hi Comment cterm=none ctermfg=88
+
+" FILE BASED INDENTATION
+au FileType python set softtabstop=8 tabstop=4 shiftwidth=4 noexpandtab
 
 augroup vimrc_autocmds
 	autocmd BufEnter * highlight HighLight ctermbg=235
