@@ -8,6 +8,7 @@ filetype plugin indent on
 source ~/.vim/functions.vimrc
 source ~/.vim/mappings.vimrc
 source ~/.vim/netrw.vimrc
+source ~/.vim/highlight_80c.vimrc
 
 let NERDCustomDelimiters = {
 	\ 'c': { 'left': '//', 'leftAlt': '/*','rightAlt': '*/'}
@@ -52,11 +53,6 @@ set hlsearch
 
 " FILE BASED INDENTATION
 au FileType python set softtabstop=8 tabstop=4 shiftwidth=4 noexpandtab
-
-augroup vimrc_autocmds
-	autocmd BufEnter * highlight HighLight ctermbg=235
-	autocmd BufEnter * match HighLight /\%81v.\+\|\s\+$\| \+\ze\t\|^ \+/
-augroup END
 
 if filereadable(glob("~/.vim/local.vimrc"))
 	source ~/.vim/local.vimrc
