@@ -8,7 +8,7 @@ map <C-D> x<Esc> <Esc>
 nmap <F3> :TagbarToggle<CR>
 
 " MAIN STUFF
-nmap <silent> <C-c> :exec CloseTabOrVim()<CR>
+nmap <silent> <C-c> :call CloseTabOrVim()<CR>
 nmap <C-q> :q<CR>
 imap <C-q> <ESC>:q<CR>
 nmap <C-s> :w<CR>
