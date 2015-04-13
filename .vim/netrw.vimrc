@@ -1,6 +1,6 @@
 let g:netrw_banner = 0
 let g:netrw_liststyle = 3
-let g:netrw_list_hide = ".git$,.sass-cache,.jpg$,.png$,.svg$,.o$,.swp$,.swo$,.o.cmd$,.gitignore"
+let g:netrw_list_hide = "\\.git$,\\.sass-cache,\\.jpg$,\\.png$,\\.svg$,\\.o$,\\.swp$,\\.swo$,\\.o\\.cmd$,\\.gitignore"
 
 " Toggle Vexplore with Ctrl-E
 function! ToggleVExplorer()
@@ -46,4 +46,4 @@ endfunction
 
 "autocmd VimEnter * exec OpenExplorer()
 autocmd TabEnter * call OpenExplorer()
-autocmd TabLeave * exec '2wincmd w'
+"autocmd TabLeave * exec '2wincmd w'
