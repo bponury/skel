@@ -1,5 +1,7 @@
 silent !stty -ixon > /dev/null 2>/dev/null
 set directory=$HOME/.vim/swap//
+set mouse=n
+set mouse=v
 
 filetype on
 filetype plugin on
