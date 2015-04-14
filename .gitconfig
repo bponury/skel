@@ -2,7 +2,37 @@
 	tool = vimdiff
 [difftool]
 	prompt = false
+[mergetool]
+	keepBackup = false
+[mergetool "meld"]
+	trustExitCode = false
+[merge]
+	tool = meld
 [alias]
 	d = difftool
+	co = checkout
+	prettylog = log --color --graph --date=short --pretty=format:'%C(bold magenta)%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cd) %C(bold blue)<%an>%Creset'
+	last = log --color -1 HEAD
+	unstage = reset HEAD --
+	ac = "!f() { git diff -w $(git rev-list HEAD --reverse -- $1 | head -1)..HEAD -- $1; }; f"
+	mine = "!f() { git checkout --ours $@ && git add $@; }; f"
+	theirs = "!f() { git checkout --theirs $@ && git add $@; }; f"
+[color]
+	status = always
+	diff = always
+	branch = always
+[color "status"]
+	added = green bold
+	changed = yellow bold
+	untracked = cyan dim
+[color "diff"]
+	meta = cyan bold
+	frag = magenta bold
+	old = yellow bold
+	new = green bold
+[color "branch"]
+	current = cyan bold
+	local = green bold
+	remote = yellow bold
 [core]
 	excludesfile = ~/.gitignore_global
