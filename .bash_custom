@@ -118,16 +118,18 @@ function _saferm()
 
 PROMPT_COMMAND='RET=$?;'
 RET_VALUE='$(echo $RET)'
-RET_SMILEY='$(if [[ $RET = 0 ]]; then echo -en "\[\033[1;32m\]:)\[\033[0;0m\]"; else echo -en "\[\033[1;31m\]:(\[\033[0;0m\]"; fi)'
+RET_SMILEY='$(if [[ $RET = 0 ]]; then /bin/echo -en "\[${_c[bold_green]}\]:)\[${_c[reset]}\]"; else /bin/echo -en "\[${_c[bold_red]}\]:(\[${_c[reset]}\]"; fi)'
 
-FAIL_COLOR='$(if [[ $RET != 0 ]]; then echo -en "\[\033[1;31m\]"; fi)'
+FAIL_COLOR='$(if [[ $RET != 0 ]]; then /bin/echo -en "\[${_c[bold_red]}\]"; fi)'
 
-COLOR_HOST=${__c[bold_cyan]}
-COLOR_LOW=${__c[bold_blue]}
-COLOR_PWD=${__c[cyan]}
+COLOR_HOST=${_c[bold_cyan]}
+COLOR_LOW=${_c[bold_blue]}
+COLOR_PWD=${_c[cyan]}
 
-export PS1="${__c[white]}${FAIL_COLOR}\t${COLOR_LOW}|${COLOR_HOST}\h${COLOR_LOW}]: ${COLOR_PWD}\w $RET_SMILEY${__c[bold_red]} \\$ ${__c[reset]}"
+# comment out following line to disable showing git branch
+__git_ps1='$(branch=`git branch --no-color 2>/dev/null | grep "\*" | sed "s/\* \(.*\)/\1/"`; if [ ! -z "$branch" ]; then c=$([ ! -z "$(git status --porcelain 2>/dev/null)" ] && /bin/echo -ne "\[${_c[bold_red]}\]"); /bin/echo -ne "\[${COLOR_PWD}\][$c$branch\[${COLOR_PWD}\]] "; fi)'
 
+export PS1="${__c[white]}${FAIL_COLOR}\t\[${COLOR_LOW}\]|\[${COLOR_HOST}\]\h\[${COLOR_LOW}\]]: \[${COLOR_PWD}\]\w ${__git_ps1}$RET_SMILEY${__c[bold_red]} \\$ ${__c[reset]}"
 export EDITOR=vim
 
 alias ls='ls -F --color'
