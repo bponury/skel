@@ -5,25 +5,25 @@ $(document).ready(function() {
 			shift = true;
 		if (ev.which == 13 && !shift) {
 			var map = {
-				'600': ':D',
-				'603': ':)',
-				'609': ';)',
-				'610': ':|',
-				'611': '-_-',
-				'615': ':/',
-				'617': ':*',
-				'61b': ':P',
-				'61c': ';P',
-				'61e': ':(',
-				'626': 'D:',
-				'62e': ':o',
-				'632': ':O',
-				'64c': '\\o/',
+				'u1f600': ':D',
+				'u263a': ':)',
+				'u1f609': ';)',
+				'u1f610': ':|',
+				'u1f611': '-_-',
+				'u1f615': ':/',
+				'u1f617': ':*',
+				'u1f61b': ':P',
+				'u1f61c': ';P',
+				'u1f61e': ':(',
+				'u1f626': 'D:',
+				'u1f62e': ':o',
+				'u1f632': ':O',
+				'u1f64c': '\\o/',
 			};
 
 			var str = $('div.PM .editable').html();
 			for (var key in map) {
-				str = str.replace(new RegExp('<img src="//ssl.gstatic.com/chat/emoji/4/emoji_u1f' + key + '.png" [^>]+>', 'g'), map[key]);
+				str = str.replace(new RegExp('<img src="//ssl.gstatic.com/chat/emoji/.?/emoji_' + key + '.png" [^>]+>', 'g'), map[key]);
 			}
 			$('div.PM .editable').html(str);
 		}
