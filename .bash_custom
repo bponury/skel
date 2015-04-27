@@ -126,8 +126,28 @@ COLOR_HOST=${_c[bold_cyan]}
 COLOR_LOW=${_c[bold_blue]}
 COLOR_PWD=${_c[cyan]}
 
+# 0 - clean
+# 1 - modified, not indexed
+# 2 - modified, indexed (ready to commit)
+# N+10 - N + untracked
+__git_status_c[0]=${COLOR_PWD}
+__git_status_c[1]=${_c[bold_red]}
+__git_status_c[2]=${_c[bold_green]}
+__git_status_c[10]=${_c[yellow]}
+__git_status_c[11]=${_c[red]}
+__git_status_c[12]=${_c[bold_yellow]}
+
+function __git_status() {
+  ret=0;
+  out=$(git status --porcelain 2>/dev/null)
+  echo "$out" | grep "^ ." &>/dev/null && ret=1
+  echo "$out" | grep "^. " &>/dev/null && ret=2
+  echo "$out" | grep "^\\?\\?" &>/dev/null && ret=$(($ret+10))
+  echo $ret
+}
+
 # comment out following line to disable showing git branch
-__git_ps1='$(branch=`git branch --no-color 2>/dev/null | grep "\*" | sed "s/\* \(.*\)/\1/"`; if [ ! -z "$branch" ]; then c=$([ ! -z "$(git status --porcelain 2>/dev/null)" ] && /bin/echo -ne "\[${_c[bold_red]}\]"); /bin/echo -ne "\[${COLOR_PWD}\][$c$branch\[${COLOR_PWD}\]] "; fi)'
+__git_ps1='$(branch=`git branch --no-color 2>/dev/null | grep "\*" | sed "s/\* \(.*\)/\1/"`; if [ ! -z "$branch" ]; then c=${__git_status_c[$(__git_status)]}; /bin/echo -ne "\[${COLOR_PWD}\][\[$c\]$branch\[${COLOR_PWD}\]] "; fi)'
 
 export PS1="${__c[white]}${FAIL_COLOR}\t\[${COLOR_LOW}\]|\[${COLOR_HOST}\]\h\[${COLOR_LOW}\]]: \[${COLOR_PWD}\]\w ${__git_ps1}$RET_SMILEY${__c[bold_red]} \\$ ${__c[reset]}"
 export EDITOR=vim
