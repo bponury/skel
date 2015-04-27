@@ -122,9 +122,9 @@ RET_SMILEY='$(if [[ $RET = 0 ]]; then /bin/echo -en "\[${_c[bold_green]}\]:)\[${
 
 FAIL_COLOR='$(if [[ $RET != 0 ]]; then /bin/echo -en "\[${_c[bold_red]}\]"; fi)'
 
-COLOR_HOST=${_c[bold_cyan]}
-COLOR_LOW=${_c[bold_blue]}
-COLOR_PWD=${_c[cyan]}
+COLOR_HOST=${_c[bold_green]}
+COLOR_LOW=${_c[bold_yellow]}
+COLOR_PWD=${_c[green]}
 
 # 0 - clean
 # 1 - modified, not indexed
