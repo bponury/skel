@@ -133,9 +133,9 @@ COLOR_PWD=${_c[cyan]}
 __git_st_c[0]=${COLOR_PWD}
 __git_st_c[1]=${_c[bold_red]}
 __git_st_c[2]=${_c[bold_green]}
-__git_st_c[10]=${_c[yellow]}
+__git_st_c[10]=${_c[bold_yellow]}
 __git_st_c[11]=${_c[red]}
-__git_st_c[12]=${_c[bold_yellow]}
+__git_st_c[12]=${_c[green]}
 
 function __git_st() {
   local ret
