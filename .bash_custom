@@ -133,17 +133,17 @@ COLOR_PWD=${_c[green]}
 __git_st_c[0]=${COLOR_PWD}
 __git_st_c[1]=${_c[bold_red]}
 __git_st_c[2]=${_c[bold_green]}
-__git_st_c[10]=${_c[yellow]}
+__git_st_c[10]=${_c[bold_yellow]}
 __git_st_c[11]=${_c[red]}
-__git_st_c[12]=${_c[bold_yellow]}
+__git_st_c[12]=${_c[green]}
 
 function __git_st() {
   local ret
   ret=0;
   local out
   out=$(git status --porcelain 2>/dev/null)
-  echo "$out" | grep "^ ." &>/dev/null && ret=1
   echo "$out" | grep "^. " &>/dev/null && ret=2
+  echo "$out" | grep "^ ." &>/dev/null && ret=1
   echo "$out" | grep -P '^\?\?' &>/dev/null && ret=$(($ret+10))
   echo $ret
 }
