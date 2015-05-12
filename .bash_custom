@@ -142,8 +142,8 @@ function __git_st() {
   ret=0;
   local out
   out=$(git status --porcelain 2>/dev/null)
-  echo "$out" | grep "^ ." &>/dev/null && ret=1
   echo "$out" | grep "^. " &>/dev/null && ret=2
+  echo "$out" | grep "^ ." &>/dev/null && ret=1
   echo "$out" | grep -P '^\?\?' &>/dev/null && ret=$(($ret+10))
   echo $ret
 }
