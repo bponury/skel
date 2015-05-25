@@ -1,4 +1,8 @@
 #!/bin/bash
+
+[[ $__BASH_CUSTOM__ ]] && echo "DOUBLE SOURCING .bash_custom, ABORTING" && return 1
+__BASH_CUSTOM__=true
+
 unset _c
 declare -A _c
 unset __c
@@ -28,88 +32,68 @@ function _c_boldify {
 }
 _c_boldify;
 
-function _saferm()
-{
-	local OPTARG=""
-	local OPTIND=""
-	local opt=""
-	local cmd=""
-	local TEMP=""
-	local PATTERN=""
-
-	while getopts "crfiIop" opt "$@"; do
-		case $opt in
-		c)
-			local _C=true
-			;;
-		r)
-			local _r="-r"
-			;;
-		f)
-			local _f="-f"
-			;;
-		i)
-			local _i="-i"
-			;;
-		I)
-			local _I="-I"
-			;;
-		o)
-			local _o="--one-file-system"
-			;;
-		p)
-			echo -e "${_c[bold_red]}\t\t!!! PURGING !!!${_c[reset]}" >&2
-			local _p=true
-			;;
-		\?)
-			echo "invalid option -$OPTARG"
-			return
-			;;
-		esac
+# Uses getopts to set up associative arrays for flags and stuff
+# Example usage:
+# function func() { # executing: func -o /tmp -p
+#   eval "$(parse_opts 'ho:p' $@)"
+#   echo "${FLAG[o]}"	# /tmp
+#   echo "${FLAG[h]}"   # ''
+#   echo "${FLAG[p]}"   # true
+#   echo "${_FLAG[p]}"  # -p
+# }
+function parse_opts() {
+	local optstring
+	optstring=$1 && shift
+	local opt
+	local OPTARG
+	local OPTIND
+	echo "declare -A FLAG"
+	echo "declare -A _FLAG"
+	while getopts "${optstring}" opt "$@"; do
+		[[ -z "${OPTARG}" ]] && OPTARG=true
+		for (( i=0; i < ${#optstring}; i++ )); do
+			local char
+			char=${optstring:$i:1}
+			[[ "${opt}" != "${char}" ]] && continue
+			echo "FLAG[${char}]=${OPTARG}"
+			echo "_FLAG[${char}]=\"-${char}\""
+			break
+		done
 	done
 
-	local args=()
-	local var=""
+	echo "local OPTIND"
+	echo "OPTIND=${OPTIND}"
+}
 
+function _saferm() {
+	eval "$(parse_opts rRofp $@)"
 	shift $((OPTIND - 1))
 
-	if [ "$#" -eq 0 ]; then
-		echo "_saferm [crfiIop] <files...>"
-		return;
-	fi
-
-	for var in "$@"; do
-		args[${#args[@]}]=\"$var\"
-	done
-
-	if [ ! -z "$_p" ]; then
-		cmd="/bin/rm ${_r} ${_f} ${_i} ${_I} ${_o}"
-	else
-		PATTERN=$(date +%Y-%m-%d_%H:%M:%S)
-		PATTERN="DELETED-${PATTERN}-XXX"
-		TEMP=$(mktemp -d /tmp/${PATTERN})
-		chmod 700 ${TEMP}
-
-		if [ -z ${TEMP} ]; then
-			echo "My God... it's full of stars!"
-			return
-		fi
-
-		cmd="/bin/mv ${_f} ${_i} -t ${TEMP}"
-	fi
-
-	if [ "$_p" ] && [ ! -z "$_C" ]; then
-		echo -e "${_c[white]}Execute: $cmd"
-		for arg in "${args[@]}"; do
-			echo -e "\t${_c[bold_white]}${arg}${_c[reset]}"
-		done
-		echo -ne "${_c[bold_red]}Remove? [Y/n]: ${_c[reset]}"
+	local files
+	files=$(/bin/ls -AFR1U $@)
+	local count
+	count=$(echo "${files}" | grep -vE '(:$|^$)' | wc -l)
+	
+	if [[ $(stat -c %m /tmp) != $(stat -c %m $(echo "$files" | head -1) 2>/dev/null) ]] || [[ ${FLAG[p]} ]]; then
+		echo -e "${_c[bold_red]}\t\t!!! PURGING !!!${_c[reset]}" >&2
+		echo -en "  ${files}" | perl -p -e "s/\n/\n  /g"
+		echo ''
+		echo -ne "${_c[bold_red]}Remove ${_c[bold_yellow]}${count}${_c[bold_red]} files? [Y/n]: ${_c[reset]}"
 		read c
-
-		([ "$c" != 'y' ] && [ "$c" != 'Y' ] && [ "$c" != '' ]) && return
+		if [[ $? -eq 0 ]] && ([[ $c == 'y' ]] || [[ $c == 'Y' ]] || [[ $c == '' ]]); then
+			/bin/rm ${_FLAG[r]} ${_FLAG[R]} ${_FLAG[o]} ${_FLAG[f]} $@
+			return $?
+		fi
+		return 1
 	fi
 
-	eval $cmd ${args[@]}
+	PATTERN=$(date +%Y-%m-%d_%H:%M:%S)
+	PATTERN="DELETED-${PATTERN}-XXX"
+	TEMP=$(mktemp -d /tmp/${PATTERN})
+	chmod 700 ${TEMP}
+	[[ -z ${TEMP} ]] && echo "mktemp failed" && return 1
+	/bin/mv $@ "${TEMP}"
+	return $?
 }
 
 #
@@ -160,7 +144,7 @@ alias grep='grep --color -E'
 alias Grep='grep --color -E'
 alias gerp='grep --color -E'
 alias sudo='sudo '
-alias rm='_saferm -co '
+alias rm='_saferm -o '
 
 source ~/.bash_local 2>/dev/null
 
