@@ -80,6 +80,7 @@ function _saferm() {
 		echo ''
 		echo -ne "${_c[bold_red]}Remove ${_c[bold_yellow]}${count}${_c[bold_red]} files? [Y/n]: ${_c[reset]}"
 		read c
+		[[ ${FLAG[o]} ]] && _FLAG[o]='--one-file-system'
 		if [[ $? -eq 0 ]] && ([[ $c == 'y' ]] || [[ $c == 'Y' ]] || [[ $c == '' ]]); then
 			/bin/rm ${_FLAG[r]} ${_FLAG[R]} ${_FLAG[o]} ${_FLAG[f]} $@
 			return $?
