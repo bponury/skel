@@ -70,19 +70,19 @@ function _saferm() {
 	shift $((OPTIND - 1))
 
 	local files
-	files=$(/bin/ls -AFR1U $@)
+	files=$(/bin/ls -AFR1U "$@")
 	local count
 	count=$(echo "${files}" | grep -vE '(:$|^$)' | wc -l)
-	
+
 	if [[ $(stat -c %m /tmp) != $(stat -c %m $(echo "$files" | head -1) 2>/dev/null) ]] || [[ ${FLAG[p]} ]]; then
 		echo -e "${_c[bold_red]}\t\t!!! PURGING !!!${_c[reset]}" >&2
 		echo -en "  ${files}" | perl -p -e "s/\n/\n  /g"
 		echo ''
 		echo -ne "${_c[bold_red]}Remove ${_c[bold_yellow]}${count}${_c[bold_red]} files? [Y/n]: ${_c[reset]}"
 		read c
-		[[ ${FLAG[o]} ]] && _FLAG[o]='--one-file-system'
-		if [[ $? -eq 0 ]] && ([[ $c == 'y' ]] || [[ $c == 'Y' ]] || [[ $c == '' ]]); then
-			/bin/rm ${_FLAG[r]} ${_FLAG[R]} ${_FLAG[o]} ${_FLAG[f]} $@
+		if [[ $? -eq 0 ]] && ([[ $c == 'y' ]] || [[ $c == 'Y' ]] || [[ -z $c ]]); then
+			[[ ${FLAG[o]} ]] && _FLAG[o]='--one-file-system'
+			/bin/rm ${_FLAG[r]} ${_FLAG[R]} ${_FLAG[o]} ${_FLAG[f]} "$@"
 			return $?
 		fi
 		return 1
