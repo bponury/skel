@@ -74,7 +74,7 @@ function _saferm() {
 	local count
 	count=$(echo "${files}" | grep -vE '(:$|^$)' | wc -l)
 
-	if [[ $(stat -c %m /tmp) != $(stat -c %m $(echo "$files" | head -1) 2>/dev/null) ]] || [[ ${FLAG[p]} ]]; then
+	if [[ $(stat -c %m /tmp) != $(stat -c %m $(echo "$files" | grep -vE '(:$|^$)' | head -1) 2>/dev/null) ]] || [[ ${FLAG[p]} ]]; then
 		echo -e "${_c[bold_red]}\t\t!!! PURGING !!!${_c[reset]}" >&2
 		echo -en "  ${files}" | perl -p -e "s/\n/\n  /g"
 		echo ''
@@ -93,13 +93,15 @@ function _saferm() {
 	TEMP=$(mktemp -d /tmp/${PATTERN})
 	chmod 700 ${TEMP}
 	[[ -z ${TEMP} ]] && echo "mktemp failed" && return 1
-	/bin/mv $@ "${TEMP}"
+	/bin/mv "$@" "${TEMP}"
 	return $?
 }
 
 #
 # SETTINGS
 #
+
+HISTSIZE= HISTFILESIZE=   # unlimited history :)
 
 PROMPT_COMMAND='RET=$?;'
 RET_VALUE='$(echo $RET)'
