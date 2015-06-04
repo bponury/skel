@@ -101,6 +101,8 @@ function _saferm() {
 # SETTINGS
 #
 
+HISTSIZE= HISTFILESIZE=   # unlimited history :)
+
 PROMPT_COMMAND='RET=$?;'
 RET_VALUE='$(echo $RET)'
 RET_SMILEY='$(if [[ $RET = 0 ]]; then /bin/echo -en "\[${_c[bold_green]}\]:)\[${_c[reset]}\]"; else /bin/echo -en "\[${_c[bold_red]}\]:(\[${_c[reset]}\]"; fi)'
