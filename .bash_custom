@@ -1,6 +1,7 @@
 #!/bin/bash
 
-[[ $__BASH_CUSTOM__ ]] && echo "DOUBLE SOURCING .bash_custom, ABORTING" && return 1
+[[ $__BASH_CUSTOM__ ]] && echo "DOUBLE SOURCING .bash_custom, ABORTING" \
+	&& return 1
 __BASH_CUSTOM__=true
 
 unset _c
@@ -69,12 +70,16 @@ function _saferm() {
 	eval "$(parse_opts rRofp $@)"
 	shift $((OPTIND - 1))
 
+	[[ -z $@ ]] && echo "rm [-r] [-f] [-o] [-p] <file #1> [<file #2> ...]" \
+		&& return 1
+
 	local files
 	files=$(/bin/ls -AFR1U "$@")
 	local count
 	count=$(echo "${files}" | grep -vE '(:$|^$)' | wc -l)
+	first_file=$(echo "${files}" | grep -vE '(:$|^$)' | head -1)
 
-	if [[ $(stat -c %m /tmp) != $(stat -c %m $(echo "$files" | grep -vE '(:$|^$)' | head -1) 2>/dev/null) ]] || [[ ${FLAG[p]} ]]; then
+	if [[ $(stat -c %m /tmp) != $(stat -c %m "${first_file}") ]] || [[ ${FLAG[p]} ]]; then
 		echo -e "${_c[bold_red]}\t\t!!! PURGING !!!${_c[reset]}" >&2
 		echo -en "  ${files}" | perl -p -e "s/\n/\n  /g"
 		echo ''
