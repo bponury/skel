@@ -74,7 +74,7 @@ function _saferm() {
 		&& return 1
 
 	local files
-	files=$(/bin/ls -AFR1U "$@")
+	files=$(/bin/ls -AR1U "$@")
 	local count
 	count=$(echo "${files}" | grep -vE '(:$|^$)' | wc -l)
 	first_file=$(echo "${files}" | grep -vE '(:$|^$)' | head -1)
