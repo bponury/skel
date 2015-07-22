@@ -65,7 +65,7 @@ function __git_st() {
 
 # comment out following line to disable showing git branch
 
-[[ ${SHOW_GIT_STATUS_IN_PROMPT} ]] && \
+[[ ${SHOW_GIT_STATUS_IN_PROMPT} == true ]] && \
 	__git_ps1='$(branch=`git branch --no-color 2>/dev/null | grep "\*" | sed "s/\* \(.*\)/\1/"`; if [ ! -z "$branch" ]; then c=${__git_st_c[$(__git_st)]}; /bin/echo -ne "\[${COLOR_PWD}\][\[$c\]$branch\[${COLOR_PWD}\]] "; fi)'
 
 export PS1="${__c[white]}${FAIL_COLOR}\t\[${COLOR_LOW}\]|\[${COLOR_HOST}\]\h\[${COLOR_LOW}\]]: \[${COLOR_PWD}\]\w ${__git_ps1}$RET_SMILEY${__c[bold_red]} \\$ ${__c[reset]}"
