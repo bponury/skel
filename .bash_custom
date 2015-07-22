@@ -4,6 +4,7 @@
 	&& return 1
 __BASH_CUSTOM__=true
 
+# defines colors to use
 unset _c
 declare -A _c
 unset __c
@@ -22,6 +23,7 @@ _c[white]="\033[0;37m"
 #	FUNCTIONS
 #
 
+# creates "bold" colors
 function _c_boldify {
 	for k in ${!_c[@]}; do
 		[ "$k" == bold_* ] && continue
@@ -31,12 +33,12 @@ function _c_boldify {
 		__c[bold_$k]="\[${_c[bold_$k]}\]"
 	done
 }
-_c_boldify;
+_c_boldify
 
 # Uses getopts to set up associative arrays for flags and stuff
 # Example usage:
 # function func() { # executing: func -o /tmp -p
-#   eval "$(parse_opts 'ho:p' $@)"
+#   eval "$(parse_opts 'ho:p' "$@")"
 #   echo "${FLAG[o]}"	# /tmp
 #   echo "${FLAG[h]}"   # ''
 #   echo "${FLAG[p]}"   # true
@@ -56,7 +58,7 @@ function parse_opts() {
 			local char
 			char=${optstring:$i:1}
 			[[ "${opt}" != "${char}" ]] && continue
-			echo "FLAG[${char}]=${OPTARG}"
+			echo "FLAG[${char}]=\"${OPTARG}\""
 			echo "_FLAG[${char}]=\"-${char}\""
 			break
 		done
@@ -66,8 +68,36 @@ function parse_opts() {
 	echo "OPTIND=${OPTIND}"
 }
 
+# asks for confirmation
+# options:
+# [-m <message>] - defines message to print/ask
+# [-y] - if set default answer will be Yes (ack on enter)
+# if no other arguments returns 0 for success 1 for failure
+# if there are other arguments it will execute them after confirmation
+# example: confirm -m "floodping goog?" -y ping -f google.com
+function confirm() {
+	eval "$(parse_opts m:y "$@")"
+	shift $((OPTIND - 1))
+	[[ ! -z "$@" ]] && echo "Will execute: $@"
+	local yes=false
+	local defaultYN="[y/N]"
+	[[ ! -z ${FLAG[y]} ]] && yes=true && defaultYN="[Y/n]"
+	local msg="Confirm ${defaultYN}: "
+	[[ ! -z ${FLAG[m]} ]] && msg="${FLAG[m]} ${defaultYN}: "
+	echo -en "${msg}"
+	local c
+	read c
+	if [[ "${c^}" == 'Y' ]] || ([[ ${yes} == true ]] && [[ -z ${c} ]]); then
+		$@
+		return 0
+	else
+		echo "-- Aborted"
+		return 1
+	fi
+}
+
 function _saferm() {
-	eval "$(parse_opts rRofp $@)"
+	eval "$(parse_opts rRofp "$@")"
 	shift $((OPTIND - 1))
 
 	[[ -z $@ ]] && echo "rm [-r] [-f] [-o] [-p] <file #1> [<file #2> ...]" \
@@ -152,6 +182,7 @@ alias grep='grep --color -E'
 alias Grep='grep --color -E'
 alias gerp='grep --color -E'
 alias sudo='sudo '
+# comment out following line to disable saferm functionality
 alias rm='_saferm -o '
 
 source ~/.bash_local 2>/dev/null
