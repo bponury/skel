@@ -60,6 +60,7 @@ if exists('g:cpp_class_type_highlight') && g:cpp_class_type_highlight
     syn match    cCustomScope    ")"
     syn match    cCustomScope    ";"
     syn match    cType    "::\w\+[ ,);]" contains=cCustomScope
+    syn match    cType    "::\w\+$" contains=cCustomScope
 "    syn match    cType    "::\w\+)" contains=cCustomScope
 	hi def link cCustomClass Function  " disabled for now
 endif

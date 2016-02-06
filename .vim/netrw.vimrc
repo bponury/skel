@@ -10,7 +10,7 @@ function! ToggleVExplorer()
 			let cur_win_nr = winnr()
 			exec expl_win_num . 'wincmd w'
 			close
-			exec cur_win_nr . 'wincmd w'
+			exec (cur_win_nr-1) . 'wincmd w'
 			unlet t:expl_buf_num
 		else
 			unlet t:expl_buf_num

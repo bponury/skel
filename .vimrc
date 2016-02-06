@@ -40,7 +40,7 @@ set smartindent
 set tabstop=4
 set softtabstop=8
 set shiftwidth=4
-set noexpandtab
+set expandtab
 
 set showmatch
 
