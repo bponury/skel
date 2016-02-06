@@ -4,119 +4,42 @@
 	&& return 1
 __BASH_CUSTOM__=true
 
-unset _c
-declare -A _c
-unset __c
-declare -A __c
+# useful global-wide functions
+source ~/.bash_functions
 
-_c[reset]="\033[0;0m"
-_c[red]="\033[0;31m"
-_c[green]="\033[0;32m"
-_c[yellow]="\033[0;33m"
-_c[blue]="\033[0;34m"
-_c[pink]="\033[0;35m"
-_c[cyan]="\033[0;36m"
-_c[white]="\033[0;37m"
+##################
+# HERE BE SETTINGS
 
-#
-#	FUNCTIONS
-#
+# color settings for prompt
+COLOR_HOST=${_c[bold_green]}
+COLOR_LOW=${_c[bold_yellow]}
+COLOR_PWD=${_c[green]}
 
-function _c_boldify {
-	for k in ${!_c[@]}; do
-		[ "$k" == bold_* ] && continue
-		local c=${_c[$k]}
-		_c[bold_$k]="${c/0;/1;}"
-		__c[$k]="\[${_c[$k]}\]"
-		__c[bold_$k]="\[${_c[bold_$k]}\]"
-	done
-}
-_c_boldify;
+# unlimited history
+HISTSIZE= HISTFILESIZE=
 
-# Uses getopts to set up associative arrays for flags and stuff
-# Example usage:
-# function func() { # executing: func -o /tmp -p
-#   eval "$(parse_opts 'ho:p' $@)"
-#   echo "${FLAG[o]}"	# /tmp
-#   echo "${FLAG[h]}"   # ''
-#   echo "${FLAG[p]}"   # true
-#   echo "${_FLAG[p]}"  # -p
-# }
-function parse_opts() {
-	local optstring
-	optstring=$1 && shift
-	local opt
-	local OPTARG
-	local OPTIND
-	echo "declare -A FLAG"
-	echo "declare -A _FLAG"
-	while getopts "${optstring}" opt "$@"; do
-		[[ -z "${OPTARG}" ]] && OPTARG=true
-		for (( i=0; i < ${#optstring}; i++ )); do
-			local char
-			char=${optstring:$i:1}
-			[[ "${opt}" != "${char}" ]] && continue
-			echo "FLAG[${char}]=${OPTARG}"
-			echo "_FLAG[${char}]=\"-${char}\""
-			break
-		done
-	done
+SHOW_GIT_STATUS_IN_PROMPT=true
+USE_SAFERM=true
 
-	echo "local OPTIND"
-	echo "OPTIND=${OPTIND}"
-}
+# exports and aliases
+export EDITOR=vim
 
-function _saferm() {
-	eval "$(parse_opts rRofp $@)"
-	shift $((OPTIND - 1))
+alias ls='ls -F --color'
+alias grep='grep --color -E'
+alias Grep='grep --color -E'
+alias gerp='grep --color -E'
+alias sudo='sudo '
 
-	[[ -z $@ ]] && echo "rm [-r] [-f] [-o] [-p] <file #1> [<file #2> ...]" \
-		&& return 1
+# END OF SETTINGS
+#################
 
-	local files
-	files=$(/bin/ls -AFR1U "$@")
-	local count
-	count=$(echo "${files}" | grep -vE '(:$|^$)' | wc -l)
-	first_file=$(echo "${files}" | grep -vE '(:$|^$)' | head -1)
 
-	if [[ $(stat -c %m /tmp) != $(stat -c %m "${first_file}") ]] || [[ ${FLAG[p]} ]]; then
-		echo -e "${_c[bold_red]}\t\t!!! PURGING !!!${_c[reset]}" >&2
-		echo -en "  ${files}" | perl -p -e "s/\n/\n  /g"
-		echo ''
-		echo -ne "${_c[bold_red]}Remove ${_c[bold_yellow]}${count}${_c[bold_red]} files? [Y/n]: ${_c[reset]}"
-		read c
-		if [[ $? -eq 0 ]] && ([[ $c == 'y' ]] || [[ $c == 'Y' ]] || [[ -z $c ]]); then
-			[[ ${FLAG[o]} ]] && _FLAG[o]='--one-file-system'
-			/bin/rm ${_FLAG[r]} ${_FLAG[R]} ${_FLAG[o]} ${_FLAG[f]} "$@"
-			return $?
-		fi
-		return 1
-	fi
 
-	PATTERN=$(date +%Y-%m-%d_%H:%M:%S)
-	PATTERN="DELETED-${PATTERN}-XXX"
-	TEMP=$(mktemp -d /tmp/${PATTERN})
-	chmod 700 ${TEMP}
-	[[ -z ${TEMP} ]] && echo "mktemp failed" && return 1
-	/bin/mv "$@" "${TEMP}"
-	return $?
-}
-
-#
-# SETTINGS
-#
-
-HISTSIZE= HISTFILESIZE=   # unlimited history :)
-
+# prompt magic
 PROMPT_COMMAND='RET=$?;'
 RET_VALUE='$(echo $RET)'
 RET_SMILEY='$(if [[ $RET = 0 ]]; then /bin/echo -en "\[${_c[bold_green]}\]:)\[${_c[reset]}\]"; else /bin/echo -en "\[${_c[bold_red]}\]:(\[${_c[reset]}\]"; fi)'
-
 FAIL_COLOR='$(if [[ $RET != 0 ]]; then /bin/echo -en "\[${_c[bold_red]}\]"; fi)'
-
-COLOR_HOST=${_c[bold_cyan]}
-COLOR_LOW=${_c[bold_blue]}
-COLOR_PWD=${_c[cyan]}
 
 # 0 - clean
 # 1 - modified, not indexed
@@ -141,18 +64,12 @@ function __git_st() {
 }
 
 # comment out following line to disable showing git branch
-__git_ps1='$(branch=`git branch --no-color 2>/dev/null | grep "\*" | sed "s/\* \(.*\)/\1/"`; if [ ! -z "$branch" ]; then c=${__git_st_c[$(__git_st)]}; /bin/echo -ne "\[${COLOR_PWD}\][\[$c\]$branch\[${COLOR_PWD}\]] "; fi)'
+
+[[ ${SHOW_GIT_STATUS_IN_PROMPT} == true ]] && \
+	__git_ps1='$(branch=`git branch --no-color 2>/dev/null | grep "\*" | sed "s/\* \(.*\)/\1/"`; if [ ! -z "$branch" ]; then c=${__git_st_c[$(__git_st)]}; /bin/echo -ne "\[${COLOR_PWD}\][\[$c\]$branch\[${COLOR_PWD}\]] "; fi)'
 
 export PS1="${__c[white]}${FAIL_COLOR}\t\[${COLOR_LOW}\]|\[${COLOR_HOST}\]\h\[${COLOR_LOW}\]]: \[${COLOR_PWD}\]\w ${__git_ps1}$RET_SMILEY${__c[bold_red]} \\$ ${__c[reset]}"
-export EDITOR=vim
-
-alias ls='ls -F --color'
-
-alias grep='grep --color -E'
-alias Grep='grep --color -E'
-alias gerp='grep --color -E'
-alias sudo='sudo '
-alias rm='_saferm -o '
+[[ ${USE_SAFERM} == true ]] && alias rm='_saferm -o '
 
 source ~/.bash_local 2>/dev/null
 
