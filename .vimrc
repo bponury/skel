@@ -1,3 +1,5 @@
+set t_ut=
+set term=xterm-256color
 silent !stty -ixon > /dev/null 2>/dev/null
 set directory=$HOME/.vim/swap//
 set mouse=n

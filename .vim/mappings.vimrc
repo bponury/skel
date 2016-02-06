@@ -22,11 +22,11 @@ nmap <C-5> 5gt
 nmap <C-6> 6gt
 
 " TAB HANDLING
-nmap <silent> <A-Up> :tabn<CR>
-imap <silent> <A-Up> <ESC>:tabn<CR>
+nmap <silent> <S-Right> :tabn<CR>
+imap <silent> <S-Right> <ESC>:tabn<CR>
 
-nmap <silent> <A-Down> :tabp<CR>
-imap <silent> <A-Down> <ESC>:tabp<CR>
+nmap <silent> <S-Left> :tabp<CR>
+imap <silent> <S-Left> <ESC>:tabp<CR>
 
 nmap <silent> <A-Left> :wincmd h<CR>
 imap <silent> <A-Left> <ESC>:wincmd h<CR>
