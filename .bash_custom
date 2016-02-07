@@ -29,11 +29,13 @@ alias grep='grep --color -E'
 alias Grep='grep --color -E'
 alias gerp='grep --color -E'
 alias sudo='sudo '
+alias tmux='tmux -2'
 
 # END OF SETTINGS
 #################
 
 
+export TERM=xterm-256color
 
 # prompt magic
 PROMPT_COMMAND='RET=$?;'
