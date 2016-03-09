@@ -17,6 +17,7 @@
 	ac = "!f() { git diff -w $(git rev-list HEAD --reverse -- $1 | head -1)..HEAD -- $1; }; f"
 	mine = "!f() { git checkout --ours $@ && git add $@; }; f"
 	theirs = "!f() { git checkout --theirs $@ && git add $@; }; f"
+	malina = !git5 sync && git5 lint && git5 export --copy-detection
 [color]
 	status = always
 	diff = always
