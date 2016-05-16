@@ -1,7 +1,7 @@
 #!/bin/bash
 
 [[ $__BASH_CUSTOM__ ]] && echo "DOUBLE SOURCING .bash_custom, ABORTING" \
-	&& return 1
+    && return 1
 __BASH_CUSTOM__=true
 
 # useful global-wide functions
@@ -15,8 +15,9 @@ COLOR_HOST=${_c[bold_green]}
 COLOR_LOW=${_c[bold_yellow]}
 COLOR_PWD=${_c[green]}
 
-# unlimited history
-HISTSIZE= HISTFILESIZE=
+export HISTSIZE= HISTFILESIZE=           # unlimited history
+export HISTCONTROL=ignoredups:erasedups  # no duplicate entries
+shopt -s histappend                      # append to history, don't overwrite it
 
 SHOW_GIT_STATUS_IN_PROMPT=true
 USE_SAFERM=true
@@ -39,6 +40,9 @@ export TERM=xterm-256color
 
 # prompt magic
 PROMPT_COMMAND='RET=$?;'
+# Save and reload the history after each command finishes
+export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+
 RET_VALUE='$(echo $RET)'
 RET_SMILEY='$(if [[ $RET = 0 ]]; then /bin/echo -en "\[${_c[bold_green]}\]:)\[${_c[reset]}\]"; else /bin/echo -en "\[${_c[bold_red]}\]:(\[${_c[reset]}\]"; fi)'
 FAIL_COLOR='$(if [[ $RET != 0 ]]; then /bin/echo -en "\[${_c[bold_red]}\]"; fi)'

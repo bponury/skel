@@ -56,7 +56,7 @@ set hlsearch
 "hi Comment cterm=none ctermfg=88
 
 " FILE BASED INDENTATION
-au FileType python set softtabstop=8 tabstop=4 shiftwidth=4 noexpandtab
+au FileType python set softtabstop=8 tabstop=2 shiftwidth=2 expandtab
 
 if filereadable(glob("~/.vim/local.vimrc"))
 	source ~/.vim/local.vimrc
