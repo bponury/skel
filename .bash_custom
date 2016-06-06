@@ -38,10 +38,8 @@ alias tmux='tmux -2'
 
 export TERM=xterm-256color
 
-# prompt magic
-PROMPT_COMMAND='RET=$?;'
-# Save and reload the history after each command finishes
-export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+# prompt magic + save and reload the history after each command finishes
+export PROMPT_COMMAND='RET=$?; history -a; history -c; history -r;'
 
 RET_VALUE='$(echo $RET)'
 RET_SMILEY='$(if [[ $RET = 0 ]]; then /bin/echo -en "\[${_c[bold_green]}\]:)\[${_c[reset]}\]"; else /bin/echo -en "\[${_c[bold_red]}\]:(\[${_c[reset]}\]"; fi)'
