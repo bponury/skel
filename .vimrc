@@ -39,9 +39,9 @@ set smarttab
 set smartindent
 
 " STYLE SETTINGS
-set tabstop=4
+set tabstop=2
 set softtabstop=8
-set shiftwidth=4
+set shiftwidth=2
 set expandtab
 
 set showmatch
@@ -61,3 +61,7 @@ au FileType python set softtabstop=8 tabstop=2 shiftwidth=2 expandtab
 if filereadable(glob("~/.vim/local.vimrc"))
 	source ~/.vim/local.vimrc
 endif
+
+"set cursorcolumn
+hi CursorLine cterm=none gui=none
+set cursorline
