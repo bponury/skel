@@ -13,6 +13,7 @@ source ~/.vim/functions.vimrc
 source ~/.vim/mappings.vimrc
 source ~/.vim/netrw.vimrc
 source ~/.vim/highlight_80c.vimrc
+source ~/.vim/tagbar.vimrc
 
 let NERDCustomDelimiters = {
 	\ 'c': { 'left': '//', 'leftAlt': '/*','rightAlt': '*/'}
